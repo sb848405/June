@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>June & You</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&display=swap" rel="stylesheet">
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #050000;
+    font-family: 'Cormorant Garamond', serif;
+    overflow: hidden;
+    color: #ffd2b3;
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: radial-gradient(circle at 50% 100%, #3a0000 0%, #110000 60%, #000000 100%);
+    transition: background 2s ease;
+}
+
+#rain-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+#celestial {
+    position: fixed;
+    width: 35vw;
+    height: 35vw;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    transition: top 2.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                left 2.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                transform 2.5s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.sun-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, #ffdd00 20%, #ff4500 80%, transparent 100%);
+    filter: url(#heat-distortion) drop-shadow(0 0 40px #ff4500);
+    transition: opacity 2.5s ease;
+}
+
+.moon-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e0f7fa 40%, #80deea 80%, #005662 100%);
+    box-shadow: inset -2vw -2vw 4vw rgba(0,0,0,0.8), inset 1vw 1vw 2vw rgba(255,255,255,0.8);
+    filter: drop-shadow(0 0 60px #80deea);
+    opacity: 0;
+    transition: opacity 2.5s ease;
+}
+
+body[data-section="0"] #celestial { left: 75%; opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+body[data-section="1"] #celestial { left: 25%; opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+body[data-section="2"] #celestial { left: 50%; opacity: 0.2; transform: translate(-50%, -50%) scale(1.4); }
+body[data-section="3"] #celestial { left: 25%; top: 40%; opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); }
+body[data-section="4"] #celestial { left: 75%; top: 30%; opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+
+body[data-section="5"] #celestial { top: 25%; left: 50%; opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
+body[data-section="6"] #celestial { top: 50%; left: 75%; opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+
+body[data-section="5"] .sun-layer, body[data-section="6"] .sun-layer { opacity: 0; }
+body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity: 1; }
+
+#scroll-container {
+    position: relative;
+    z-index: 10;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+.section {
+    height: 100vh;
+    width: 100%;
+    scroll-snap-align: start;
+    display: flex;
+    position: relative;
+}
+
+.heat-text {
+    filter: url(#heat-distortion);
+}
+
+.title {
+    font-family: 'Cinzel', serif;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+}
+
+.body-text {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    font-style: italic;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.in-view .body-text {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.svg-art {
+    position: absolute;
+    pointer-events: none;
+}
+
+@keyframes rainFall {
+    0% { transform: translateY(-10vh); }
+    100% { transform: translateY(110vh); }
+}
+
+.drop {
+    position: absolute;
+    background: linear-gradient(to bottom, rgba(144, 224, 239, 0), rgba(144, 224, 239, 0.8));
+    width: 1px;
+}
+
+@media (max-width: 768px) {
+    .section {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .title {
+        font-size: 15vw;
+        margin-bottom: 2rem;
+        z-index: 2;
+    }
+
+    .body-text {
+        font-size: 6vw;
+        z-index: 2;
+    }
+
+    .svg-art {
+        width: 80vw;
+        height: 80vw;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.3;
+        z-index: 1;
+    }
+
+    #celestial { width: 70vw; height: 70vw; }
+    body[data-section="0"] #celestial { left: 50%; top: 30%; opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+    body[data-section="1"] #celestial { left: 50%; top: 40%; opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+    body[data-section="2"] #celestial { left: 50%; top: 50%; opacity: 0.2; transform: translate(-50%, -50%) scale(1.2); }
+    body[data-section="3"] #celestial { left: 50%; top: 40%; opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
+    body[data-section="4"] #celestial { left: 50%; top: 30%; opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+    body[data-section="5"] #celestial { top: 25%; left: 50%; opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
+    body[data-section="6"] #celestial { top: 25%; left: 50%; opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
+}
+
+@media (min-width: 769px) {
+    .section {
+        flex-direction: row;
+        padding: 4rem 10vw;
+    }
+
+    .section:nth-child(odd) {
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .section:nth-child(even) {
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .title {
+        font-size: 7vw;
+        margin-bottom: 2rem;
+    }
+
+    .body-text {
+        font-size: 2vw;
+        max-width: 40vw;
+    }
+
+    .svg-art {
+        width: 40vw;
+        height: 40vw;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .section:nth-child(even) .svg-art {
+        left: 5vw;
+    }
+}
+
+.s-cool .title, .s-cool .body-text {
+    color: #e0f7fa;
+    text-shadow: 0 0 20px rgba(128, 222, 234, 0.3);
+}
+
+.s-cool .heat-text {
+    filter: none;
+}
+</style>
+</head>
+<body data-section="0">
+
+<svg style="width:0;height:0;position:absolute;">
+    <defs>
+        <filter id="heat-distortion" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="2" result="warp">
+                <animate attributeName="baseFrequency" values="0.01 0.02; 0.015 0.03; 0.01 0.02" dur="5s" repeatCount="indefinite"/>
+            </feTurbulence>
+            <feDisplacementMap in="SourceGraphic" in2="warp" scale="15" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <linearGradient id="bridge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="transparent" />
+            <stop offset="50%" stop-color="#ff4500" />
+            <stop offset="100%" stop-color="transparent" />
+        </linearGradient>
+    </defs>
+</svg>
+
+<div id="bg-canvas"></div>
+<div id="rain-container"></div>
+<div id="celestial">
+    <div class="sun-layer"></div>
+    <div class="moon-layer"></div>
+</div>
+
+<div id="scroll-container">
+    <div class="section" data-bg="radial-gradient(circle at 50% 100%, #3a0000 0%, #110000 60%, #000000 100%)">
+        <div>
+            <h1 class="title heat-text">JUNE IN<br>KOLKATA</h1>
+            <p class="body-text">The heat is relentless. The air is heavy.</p>
+        </div>
+    </div>
+
+    <div class="section" data-bg="radial-gradient(circle at 50% 50%, #4a0a0a 0%, #0d0000 100%)">
+        <svg class="svg-art" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M0,80 Q25,50 50,80 T100,80" fill="none" stroke="url(#bridge-grad)" stroke-width="2" class="heat-text" />
+            <path d="M0,85 Q25,65 50,85 T100,85" fill="none" stroke="url(#bridge-grad)" stroke-width="1" class="heat-text" />
+        </svg>
+        <div style="text-align: right;">
+            <h2 class="title heat-text">THE MIDDAY<br>SUN</h2>
+            <p class="body-text">The asphalt shimmers under an unforgiving sky. The city slows to a crawl, trapped in an amber grip.</p>
+        </div>
+    </div>
+
+    <div class="section" data-bg="radial-gradient(circle at 50% 50%, #2a0505 0%, #050000 100%)">
+        <div>
+            <h2 class="title heat-text">A MIRAGE</h2>
+            <p class="body-text">Every breath drawn feels like inhaling fire. The horizon dissolves into a quiet, trembling blur.</p>
+        </div>
+    </div>
+
+    <div class="section" data-bg="radial-gradient(circle at 50% 50%, #3d1400 0%, #0a0200 100%)">
+        <div style="text-align: right;">
+            <h2 class="title heat-text">SEEKING<br>RESPITE</h2>
+            <p class="body-text">A fleeting moment under an ancient banyan tree. The momentary chill of an earthen clay cup.</p>
+        </div>
+    </div>
+
+    <div class="section" data-bg="radial-gradient(circle at 50% 100%, #1a0a00 0%, #000000 100%)">
+        <div>
+            <h2 class="title heat-text">THE WAIT</h2>
+            <p class="body-text">Looking constantly at the horizon, hoping for the sudden, dark, rolling clouds of the Kalbaishakhi.</p>
+        </div>
+    </div>
+
+    <div class="section s-cool" data-bg="radial-gradient(circle at 50% 50%, #001f3f 0%, #000810 100%)">
+        <div style="text-align: center; width: 100%;">
+            <h1 class="title">THEN I THINK<br>OF YOU.</h1>
+            <p class="body-text" style="margin: 0 auto;">And the atmosphere immediately begins to shift.</p>
+        </div>
+    </div>
+
+    <div class="section s-cool" data-bg="radial-gradient(circle at 50% 0%, #003366 0%, #001122 60%, #000000 100%)" id="final-sec">
+        <div>
+            <h2 class="title">MY RESPITE</h2>
+            <p class="body-text">You are the sudden, cool evening breeze. The very first drop of rain on parched earth. Surviving this city is beautiful, simply because you are in it.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+const sections = document.querySelectorAll('.section');
+const bgCanvas = document.getElementById('bg-canvas');
+const rainContainer = document.getElementById('rain-container');
+const finalSec = document.getElementById('final-sec');
+
+const observerOptions = {
+    root: document.getElementById('scroll-container'),
+    threshold: 0.5
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            const newBg = entry.target.getAttribute('data-bg');
+            bgCanvas.style.background = newBg;
+
+            const index = Array.from(sections).indexOf(entry.target);
+            document.body.setAttribute('data-section', index);
+
+            if (entry.target.id === 'final-sec' || entry.target.classList.contains('s-cool')) {
+                rainContainer.style.opacity = '1';
+                if (rainContainer.children.length === 0) {
+                    createRain();
+                }
+            } else {
+                rainContainer.style.opacity = '0';
+            }
+        }
+    });
+}, observerOptions);
+
+sections.forEach(sec => observer.observe(sec));
+
+function createRain() {
+    for (let i = 0; i < 100; i++) {
+        const drop = document.createElement('div');
+        drop.classList.add('drop');
+        drop.style.left = Math.random() * 100 + 'vw';
+        drop.style.height = (Math.random() * 20 + 10) + 'px';
+        drop.style.animation = `rainFall ${Math.random() * 0.5 + 0.5}s linear infinite`;
+        drop.style.animationDelay = Math.random() * 2 + 's';
+        rainContainer.appendChild(drop);
+    }
+}
+</script>
+</body>
+</html>
