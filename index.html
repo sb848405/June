@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>June & You</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&display=swap" rel="stylesheet">
+<title>June & You | Angels Daily Crusade</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&display=swap" rel="stylesheet">
+
 <style>
 * {
     box-sizing: border-box;
@@ -19,6 +20,66 @@ body, html {
     font-family: 'Cormorant Garamond', serif;
     overflow: hidden;
     color: #ffd2b3;
+    user-select: none;
+}
+
+#intro-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #050000;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1.5s ease;
+}
+
+.intro-question {
+    font-family: 'Cinzel', serif;
+    font-size: 3vw;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeInText 2s ease forwards 0.5s;
+    letter-spacing: 0.05em;
+}
+
+.intro-subtitle {
+    font-size: 1.8rem;
+    font-style: italic;
+    color: #ffd2b3;
+    opacity: 0;
+    margin-bottom: 3rem;
+    animation: fadeInText 2s ease forwards 1s;
+}
+
+#jata-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    padding: 1rem 4rem;
+    color: #ffd2b3;
+    background: transparent;
+    border: 1px solid rgba(255, 210, 179, 0.5);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    opacity: 0;
+    animation: fadeInText 2s ease forwards 1.8s;
+}
+
+#jata-btn:hover {
+    background: #ffd2b3;
+    color: #050000;
+    box-shadow: 0 0 25px rgba(255, 210, 179, 0.4);
+}
+
+@keyframes fadeInText {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 #bg-canvas {
@@ -46,8 +107,8 @@ body, html {
 
 #celestial {
     position: fixed;
-    width: 35vw;
-    height: 35vw;
+    width: 28vw;
+    height: 28vw;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(1);
@@ -59,46 +120,93 @@ body, html {
     pointer-events: none;
 }
 
-.sun-layer {
+.sun-layer, .moon-layer {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     border-radius: 50%;
-    background: radial-gradient(circle, #fff 0%, #ffdd00 20%, #ff4500 80%, transparent 100%);
-    filter: url(#heat-distortion) drop-shadow(0 0 40px #ff4500);
     transition: opacity 2.5s ease;
 }
 
+.sun-layer {
+    background: radial-gradient(circle, #fff 0%, #ffdd00 20%, #ff4500 80%, transparent 100%);
+    filter: url(#heat-distortion) drop-shadow(0 0 40px #ff4500);
+}
+
 .moon-layer {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e0f7fa 40%, #80deea 80%, #005662 100%);
     box-shadow: inset -2vw -2vw 4vw rgba(0,0,0,0.8), inset 1vw 1vw 2vw rgba(255,255,255,0.8);
     filter: drop-shadow(0 0 60px #80deea);
     opacity: 0;
-    transition: opacity 2.5s ease;
 }
 
-body[data-section="0"] #celestial { left: 75%; opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
-body[data-section="1"] #celestial { left: 25%; opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-body[data-section="2"] #celestial { left: 50%; opacity: 0.2; transform: translate(-50%, -50%) scale(1.4); }
-body[data-section="3"] #celestial { left: 25%; top: 40%; opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); }
-body[data-section="4"] #celestial { left: 75%; top: 30%; opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+.hover-image-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 10;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 0 30px rgba(255,210,179,0.3);
+    border: 3px solid rgba(255, 210, 179, 0.4);
+}
 
-body[data-section="5"] #celestial { top: 25%; left: 50%; opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
-body[data-section="6"] #celestial { top: 50%; left: 75%; opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+.hover-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+}
 
-body[data-section="5"] .sun-layer, body[data-section="6"] .sun-layer { opacity: 0; }
-body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity: 1; }
+#celestial.is-hovered .hover-image-container {
+    opacity: 1;
+    transform: scale(1);
+}
+
+body[data-section="0"] #celestial { left: 75%; top: 50%; opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+body[data-section="1"] #celestial { left: 25%; top: 40%; opacity: 0.7; transform: translate(-50%, -50%) scale(0.9); }
+body[data-section="2"] #celestial { left: 75%; top: 60%; opacity: 0.7; transform: translate(-50%, -50%) scale(0.9); }
+body[data-section="3"] #celestial { left: 25%; top: 50%; opacity: 0.6; transform: translate(-50%, -50%) scale(0.8); }
+body[data-section="4"] #celestial { left: 75%; top: 35%; opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+body[data-section="5"] #celestial { left: 50%; top: 50%; opacity: 0.4; transform: translate(-50%, -50%) scale(1.3); }
+body[data-section="6"] #celestial { left: 75%; top: 60%; opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+body[data-section="7"] #celestial { left: 50%; top: 50%; opacity: 0.8; transform: translate(-50%, -50%) scale(1.0); }
+body[data-section="8"] #celestial { left: 75%; top: 40%; opacity: 0.8; transform: translate(-50%, -50%) scale(0.9); }
+body[data-section="9"] #celestial { left: 25%; top: 30%; opacity: 0.9; transform: translate(-50%, -50%) scale(1.0); }
+body[data-section="10"] #celestial { left: 75%; top: 55%; opacity: 1; transform: translate(-50%, -50%) scale(0.85); }
+body[data-section="11"] #celestial { left: 50%; top: 45%; opacity: 0.9; transform: translate(-50%, -50%) scale(0.7); }
+body[data-section="12"] #celestial { left: 50%; top: 25%; opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+body[data-section="13"] #celestial { left: 50%; top: 25%; opacity: 0.9; transform: translate(-50%, -50%) scale(1.2); }
+
+body[data-section="5"] .sun-layer, 
+body[data-section="8"] .sun-layer,
+body[data-section="9"] .sun-layer,
+body[data-section="10"] .sun-layer,
+body[data-section="11"] .sun-layer,
+body[data-section="12"] .sun-layer,
+body[data-section="13"] .sun-layer { opacity: 0; }
+
+body[data-section="7"] .moon-layer, 
+body[data-section="8"] .moon-layer,
+body[data-section="9"] .moon-layer,
+body[data-section="10"] .moon-layer,
+body[data-section="11"] .moon-layer,
+body[data-section="12"] .moon-layer,
+body[data-section="13"] .moon-layer { opacity: 1; }
 
 #scroll-container {
     position: relative;
     z-index: 10;
     height: 100vh;
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
+}
+
+#scroll-container.active {
+    overflow-y: auto;
 }
 
 .section {
@@ -107,26 +215,71 @@ body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity
     scroll-snap-align: start;
     display: flex;
     position: relative;
+    padding: 2rem;
 }
 
 .heat-text {
     filter: url(#heat-distortion);
 }
 
+.time-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: #ff9d5c;
+    border: 1px solid rgba(255, 157, 92, 0.4);
+    padding: 0.4rem 1.2rem;
+    border-radius: 30px;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.1em;
+}
+
+.s-cool .time-badge {
+    color: #80deea;
+    border-color: rgba(128, 222, 234, 0.4);
+}
+
 .title {
     font-family: 'Cinzel', serif;
     line-height: 1.1;
     letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
 }
 
 .body-text {
-    font-size: 1.5rem;
-    line-height: 1.6;
+    font-size: 1.6rem;
+    line-height: 1.7;
     font-style: italic;
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 1s ease, transform 1s ease;
 }
+
+.poem-line {
+    font-size: 2.2rem;
+    line-height: 1.5;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    margin-bottom: 0.8rem;
+    color: #e0f7fa;
+    text-shadow: 0 0 15px rgba(224, 247, 250, 0.4);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.in-view .poem-line {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.in-view .poem-line:nth-child(1) { transition-delay: 0.2s; }
+.in-view .poem-line:nth-child(2) { transition-delay: 0.6s; }
+.in-view .poem-line:nth-child(3) { transition-delay: 1.0s; }
+.in-view .poem-line:nth-child(4) { transition-delay: 1.4s; }
+.in-view .poem-line:nth-child(5) { transition-delay: 1.8s; }
+.in-view .poem-line:nth-child(6) { transition-delay: 2.2s; }
 
 .in-view .body-text {
     opacity: 1;
@@ -149,24 +302,52 @@ body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity
     width: 1px;
 }
 
+.hover-hint {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    color: rgba(255, 210, 179, 0.6);
+    text-align: center;
+    pointer-events: none;
+    font-family: 'Cinzel', serif;
+    animation: pulseHint 2s infinite ease-in-out;
+    z-index: 100;
+}
+
+@keyframes pulseHint {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
 @media (max-width: 768px) {
+    .intro-question { font-size: 8vw; padding: 0 1rem; }
+    .intro-subtitle { font-size: 1.2rem; }
+    
     .section {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 2rem;
+        padding: 2.5rem;
         text-align: center;
     }
 
     .title {
-        font-size: 15vw;
-        margin-bottom: 2rem;
+        font-size: 10vw;
+        margin-bottom: 1.5rem;
         z-index: 2;
     }
 
     .body-text {
-        font-size: 6vw;
+        font-size: 5.5vw;
         z-index: 2;
+    }
+
+    .poem-line {
+        font-size: 6.5vw;
+        line-height: 1.4;
     }
 
     .svg-art {
@@ -179,20 +360,27 @@ body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity
         z-index: 1;
     }
 
-    #celestial { width: 70vw; height: 70vw; }
+    #celestial { width: 60vw; height: 60vw; }
     body[data-section="0"] #celestial { left: 50%; top: 30%; opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
-    body[data-section="1"] #celestial { left: 50%; top: 40%; opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-    body[data-section="2"] #celestial { left: 50%; top: 50%; opacity: 0.2; transform: translate(-50%, -50%) scale(1.2); }
-    body[data-section="3"] #celestial { left: 50%; top: 40%; opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
-    body[data-section="4"] #celestial { left: 50%; top: 30%; opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
-    body[data-section="5"] #celestial { top: 25%; left: 50%; opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
-    body[data-section="6"] #celestial { top: 25%; left: 50%; opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
+    body[data-section="1"] #celestial { left: 50%; top: 35%; opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    body[data-section="2"] #celestial { left: 50%; top: 30%; opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    body[data-section="3"] #celestial { left: 50%; top: 35%; opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+    body[data-section="4"] #celestial { left: 50%; top: 30%; opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+    body[data-section="5"] #celestial { top: 30%; left: 50%; opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); }
+    body[data-section="6"] #celestial { top: 35%; left: 50%; opacity: 0.8; transform: translate(-50%, -50%) scale(0.9); }
+    body[data-section="7"] #celestial { top: 30%; left: 50%; opacity: 0.8; transform: translate(-50%, -50%) scale(1.0); }
+    body[data-section="8"] #celestial { top: 35%; left: 50%; opacity: 0.8; transform: translate(-50%, -50%) scale(0.9); }
+    body[data-section="9"] #celestial { top: 30%; left: 50%; opacity: 0.9; transform: translate(-50%, -50%) scale(0.9); }
+    body[data-section="10"] #celestial { top: 40%; left: 50%; opacity: 0.9; transform: translate(-50%, -50%) scale(0.85); }
+    body[data-section="11"] #celestial { top: 30%; left: 50%; opacity: 0.8; transform: translate(-50%, -50%) scale(0.8); }
+    body[data-section="12"] #celestial { top: 22%; left: 50%; opacity: 0.8; transform: translate(-50%, -50%) scale(0.9); }
+    body[data-section="13"] #celestial { top: 22%; left: 50%; opacity: 0.9; transform: translate(-50%, -50%) scale(1.0); }
 }
 
 @media (min-width: 769px) {
     .section {
         flex-direction: row;
-        padding: 4rem 10vw;
+        padding: 4rem 12vw;
     }
 
     .section:nth-child(odd) {
@@ -206,13 +394,12 @@ body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity
     }
 
     .title {
-        font-size: 7vw;
-        margin-bottom: 2rem;
+        font-size: 5vw;
     }
 
     .body-text {
-        font-size: 2vw;
-        max-width: 40vw;
+        font-size: 1.8vw;
+        max-width: 42vw;
     }
 
     .svg-art {
@@ -239,6 +426,14 @@ body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity
 </head>
 <body data-section="0">
 
+<audio id="bg-audio" src="HeatWaves.mp3" loop></audio>
+
+<div id="intro-screen">
+    <h1 class="intro-question">Hello Miss Angry Bird</h1>
+    <p class="intro-subtitle">I think this summer is so bright & then I saw you🫠.</p>
+    <button id="jata-btn">Kuch Bhi</button>
+</div>
+
 <svg style="width:0;height:0;position:absolute;">
     <defs>
         <filter id="heat-distortion" x="-20%" y="-20%" width="140%" height="140%">
@@ -257,16 +452,24 @@ body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity
 
 <div id="bg-canvas"></div>
 <div id="rain-container"></div>
+
 <div id="celestial">
     <div class="sun-layer"></div>
     <div class="moon-layer"></div>
+    <div class="hover-image-container">
+        <img id="hourly-image" src="https://placehold.co/400x400/2a0505/ffd2b3?text=5+AM+Rise" alt="Your schedule moment">
+    </div>
 </div>
 
+<div class="hover-hint">Hover / Tap the glowing orb to peek inside your day</div>
+
 <div id="scroll-container">
+    
     <div class="section" data-bg="radial-gradient(circle at 50% 100%, #3a0000 0%, #110000 60%, #000000 100%)">
         <div>
-            <h1 class="title heat-text">JUNE IN<br>KOLKATA</h1>
-            <p class="body-text">The heat is relentless. The air is heavy.</p>
+            <span class="time-badge">05:00 AM</span>
+            <h1 class="title heat-text">THE DAWN<br>PATROL</h1>
+            <p class="body-text">Long before the Kolkata sun gathers its fierce strength, you are already awake. A true morning warrior, you outruns the heat before it even hatches, capturing the quiet chill of the dawn with absolute, calm elegance.</p>
         </div>
     </div>
 
@@ -276,52 +479,157 @@ body[data-section="5"] .moon-layer, body[data-section="6"] .moon-layer { opacity
             <path d="M0,85 Q25,65 50,85 T100,85" fill="none" stroke="url(#bridge-grad)" stroke-width="1" class="heat-text" />
         </svg>
         <div style="text-align: right;">
-            <h2 class="title heat-text">THE MIDDAY<br>SUN</h2>
-            <p class="body-text">The asphalt shimmers under an unforgiving sky. The city slows to a crawl, trapped in an amber grip.</p>
+            <span class="time-badge">06:00 AM</span>
+            <h2 class="title heat-text">COLLEGE<br>CRUSADE</h2>
+            <p class="body-text">Heading to college under the early morning haze. Equipped with sheer resolve and heavy books, you navigates the humid streets like a seasoned explorer, transforming the sticky morning breeze into your personal victory run.</p>
         </div>
     </div>
 
     <div class="section" data-bg="radial-gradient(circle at 50% 50%, #2a0505 0%, #050000 100%)">
         <div>
-            <h2 class="title heat-text">A MIRAGE</h2>
-            <p class="body-text">Every breath drawn feels like inhaling fire. The horizon dissolves into a quiet, trembling blur.</p>
+            <span class="time-badge">10:00 AM</span>
+            <h2 class="title heat-text">RECHARGING<br>SUPERPOWERS</h2>
+            <p class="body-text">A strategic, golden pause for breakfast. Whether it is cool mangoes or crisp energy, you builds a delicious defensive wall against the rising mercury, refueling with a joyful smile that defies the heavy morning heat.</p>
         </div>
     </div>
 
     <div class="section" data-bg="radial-gradient(circle at 50% 50%, #3d1400 0%, #0a0200 100%)">
         <div style="text-align: right;">
-            <h2 class="title heat-text">SEEKING<br>RESPITE</h2>
-            <p class="body-text">A fleeting moment under an ancient banyan tree. The momentary chill of an earthen clay cup.</p>
+            <span class="time-badge">11:00 AM</span>
+            <h2 class="title heat-text">THE DESK<br>GENERAL</h2>
+            <p class="body-text">Off to conquer your workspace. Surrounded by emails, tasks, and ticking clocks, you orchestrates your responsibilities with effortless charm. Under the lazy ceiling fan, you is the coolest mind in the room, keeping chaos perfectly at bay.</p>
         </div>
     </div>
 
     <div class="section" data-bg="radial-gradient(circle at 50% 100%, #1a0a00 0%, #000000 100%)">
         <div>
-            <h2 class="title heat-text">THE WAIT</h2>
-            <p class="body-text">Looking constantly at the horizon, hoping for the sudden, dark, rolling clouds of the Kalbaishakhi.</p>
+            <span class="time-badge">01:00 PM</span>
+            <h2 class="title heat-text">MIDDAY<br>REFUGE</h2>
+            <p class="body-text">The world outside is a liquid fire, yet your lunch hour feels like a quiet sanctuary. With Kolkata sizzling at its maximum peak, you takes a peaceful respite, turning a simple meal into an absolute fortress of tranquility.</p>
         </div>
     </div>
 
-    <div class="section s-cool" data-bg="radial-gradient(circle at 50% 50%, #001f3f 0%, #000810 100%)">
+    <div class="section" data-bg="radial-gradient(circle at 50% 50%, #2b0b00 0%, #0a0200 100%)">
         <div style="text-align: center; width: 100%;">
-            <h1 class="title">THEN I THINK<br>OF YOU.</h1>
-            <p class="body-text" style="margin: 0 auto;">And the atmosphere immediately begins to shift.</p>
+            <span class="time-badge">02:00 PM</span>
+            <h2 class="title heat-text">TACTICAL<br>HIBERNATION</h2>
+            <p class="body-text" style="margin: 0 auto; max-width: 50vw;">Shhh... The secret weapon has been deployed. A masterclass in heat management, you takes a legendary power nap, completely dodging the afternoon burn and recharging your relentless energy in comfortable, quiet shadows.</p>
         </div>
     </div>
 
-    <div class="section s-cool" data-bg="radial-gradient(circle at 50% 0%, #003366 0%, #001122 60%, #000000 100%)" id="final-sec">
+    <div class="section" data-bg="radial-gradient(circle at 30% 70%, #8c2a00 0%, #3d0800 80%, #000000 100%)">
         <div>
-            <h2 class="title">MY RESPITE</h2>
-            <p class="body-text">You are the sudden, cool evening breeze. The very first drop of rain on parched earth. Surviving this city is beautiful, simply because you are in it.</p>
+            <span class="time-badge" style="color: #ffb84d; border-color: rgba(255, 184, 77, 0.4);">04:00 PM</span>
+            <h2 class="title heat-text" style="color: #ffb84d; text-shadow: 0 0 20px rgba(255, 184, 77, 0.3);">PUNCHING<br>THE HEAT</h2>
+            <p class="body-text">Who says you can't fight the weather? You literally kicks summer in the face. Channeling the fading fiery heat of the late afternoon into sharp, disciplined moves, you rules the tatami mat with unstoppable force and grace as the sun begins to lower.</p>
         </div>
     </div>
+
+    <div class="section s-cool" data-bg="radial-gradient(circle at 50% 50%, #1a0b2e 0%, #0a0314 70%, #000000 100%)">
+        <div style="text-align: center; width: 100%;">
+            <span class="time-badge">06:00 PM</span>
+            <h2 class="title">DUSK'S<br>EMBRACE</h2>
+            <p class="body-text" style="margin: 0 auto; max-width: 50vw;">The golden hour surrenders to twilight. As the Kolkata sun finally dips below the skyline, the moon awakens. you welcomes the cooler evening breeze, seamlessly transitioning from the day's fiery battles to the serene rhythm of the night.</p>
+        </div>
+    </div>
+
+    <div class="section s-cool" data-bg="radial-gradient(circle at 70% 30%, #003a7a 0%, #00152b 90%)">
+        <div style="text-align: right;">
+            <span class="time-badge">08:00 PM</span>
+            <h2 class="title">THE WISDOM<br>SHIELD</h2>
+            <p class="body-text">Spreading intelligence, patience, and absolute focus. As a tutor, you guides chaotic young minds into clear understanding, your bright energy keeping the room entirely cool and inspired after an incredibly packed day.</p>
+        </div>
+    </div>
+
+    <div class="section s-cool" data-bg="radial-gradient(circle at 50% 0%, #003366 0%, #001122 60%, #000000 100%)">
+        <div>
+            <span class="time-badge">10:00 PM</span>
+            <h2 class="title">THE FEAST OF<br>CHAMPIONS</h2>
+            <p class="body-text">The stars are fully out, and your appetite is ready. A warm, well-deserved late dinner to celebrate another incredible, hyper-productive day survived and completely conquered with high spirits.</p>
+        </div>
+    </div>
+
+    <div class="section s-cool" data-bg="radial-gradient(circle at 50% 50%, #002244 0%, #000c1a 70%)">
+        <div style="text-align: right;">
+            <span class="time-badge">11:00 PM</span>
+            <h2 class="title">THE ALCHEMIST'S<br>HOUR</h2>
+            <p class="body-text">Through the silence of night, You gathers the wisdom of roots and leaves, shaping them into tree-born medicines. In the stillness of Kolkata’s night, your hands weave healing that blossoms like a secret forest of comfort.</p>
+        </div>
+    </div>
+
+    <div class="section s-cool" data-bg="radial-gradient(circle at 50% 50%, #001122 0%, #000511 60%, #000000 100%)">
+        <div style="text-align: center; width: 100%;">
+            <span class="time-badge">01:00 AM</span>
+            <h2 class="title">CHAMPION'S<br>REST</h2>
+            <p class="body-text" style="margin: 0 auto; max-width: 60vw;">Finally, the long, exhausting day folds into serene, cozy silence. Under the peaceful, humming ceiling fan, the incredible warrior drifts into a deeply deserved slumber. Ready to wake up in a few hours, and rule your universe all over again.</p>
+        </div>
+    </div>
+
+    <div class="section s-cool no-rain" data-bg="radial-gradient(circle at 30% 30%, #001a33 0%, #000d1a 70%, #000000 100%)" style="display: flex !important; flex-direction: column !important; justify-content: flex-end !important; padding-bottom: 8vh !important;">
+        <div style="text-align: center; width: 100%; z-index: 10;">
+            <span class="time-badge">A POETIC TRIBUTE</span>
+                <p class="poem-line">"Through Heat Waves in the middle of June,</p>
+                <p class="poem-line">You walks beneath a ruthless noon.</p>
+                <p class="poem-line">The roads beneath you burn like flame,</p>
+                <p class="poem-line">Yet still your spirit stays the same.</p>
+                <p class="poem-line">While daylight presses earth below,</p>
+                <p class="poem-line">You endures like roots that slowly grow."</p>
+        </div>
+    </div>
+
+    <div class="section s-cool no-rain" data-bg="radial-gradient(circle at 50% 50%, #0a001a 0%, #03000a 60%, #000000 100%)" id="final-sec" style="display: flex !important; flex-direction: column !important; justify-content: flex-end !important; padding-bottom: 12vh !important;">
+        <div style="text-align: center; width: 100%; z-index: 10;">
+            <span class="time-badge">THE END</span>
+            <h2 class="title" style="font-size: 5.5vw; margin-bottom: 1.5rem; color: #ffdbb5; text-shadow: 0 0 30px rgba(255,219,181,0.3);">UNPARALLELED</h2>
+            <p class="body-text" style="margin: 0 auto; max-width: 65vw; font-size: 1.8rem; line-height: 1.8;">
+                From the sharp chill of your 5 AM wake-up call to the late alchemist's midnight brew, you are a living proof of boundless passion and unwavering resolve. 
+                Kolkata's legendary heatwave is fierce, but you remains, and always will be, completely, wonderfully undefeated.
+            </p>
+        </div>
+    </div>
+
 </div>
 
 <script>
+const introScreen = document.getElementById('intro-screen');
+const jataBtn = document.getElementById('jata-btn');
+const scrollContainer = document.getElementById('scroll-container');
+const audioPlayer = document.getElementById('bg-audio');
+
+const hourlyImages = {             
+    0: "5AM.png",
+    1: "6AM.png",
+    2: "10AM.png",
+    3: "11AM.png",
+    4: "1PM.png",
+    5: "2PM.png",
+    6: "4PM.png",
+    7: "6PM.png",
+    8: "8PM.png",
+    9: "10PM.png",
+    10: "11PM.png",
+    11: "1AM.png",
+    12: "Metaphore.png",
+    13: "angel.png"
+};
+
+jataBtn.addEventListener('click', () => {
+    audioPlayer.play().catch(error => {
+        console.log("Audio play postponed pending interactions:", error);
+    });
+
+    introScreen.style.opacity = '0';
+    scrollContainer.classList.add('active');
+
+    setTimeout(() => {
+        introScreen.style.display = 'none';
+    }, 1500);
+});
+
 const sections = document.querySelectorAll('.section');
 const bgCanvas = document.getElementById('bg-canvas');
 const rainContainer = document.getElementById('rain-container');
-const finalSec = document.getElementById('final-sec');
+const hourlyImgElement = document.getElementById('hourly-image');
 
 const observerOptions = {
     root: document.getElementById('scroll-container'),
@@ -338,7 +646,11 @@ const observer = new IntersectionObserver((entries) => {
             const index = Array.from(sections).indexOf(entry.target);
             document.body.setAttribute('data-section', index);
 
-            if (entry.target.id === 'final-sec' || entry.target.classList.contains('s-cool')) {
+            if (hourlyImages[index]) {
+                hourlyImgElement.src = hourlyImages[index];
+            }
+
+            if (entry.target.classList.contains('s-cool') && !entry.target.classList.contains('no-rain')) {
                 rainContainer.style.opacity = '1';
                 if (rainContainer.children.length === 0) {
                     createRain();
@@ -363,6 +675,30 @@ function createRain() {
         rainContainer.appendChild(drop);
     }
 }
+
+const celestial = document.getElementById('celestial');
+
+function checkCelestialHover(clientX, clientY) {
+    const rect = celestial.getBoundingClientRect();
+    const dx = clientX - (rect.left + rect.width / 2);
+    const dy = clientY - (rect.top + rect.height / 2);
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < rect.width / 2) {
+        celestial.classList.add('is-hovered');
+    } else {
+        celestial.classList.remove('is-hovered');
+    }
+}
+
+document.addEventListener('mousemove', (e) => checkCelestialHover(e.clientX, e.clientY));
+document.addEventListener('click', (e) => checkCelestialHover(e.clientX, e.clientY));
+
+document.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 0) {
+        checkCelestialHover(e.touches[0].clientX, e.touches[0].clientY);
+    }
+});
 </script>
 </body>
 </html>
